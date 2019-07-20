@@ -133,7 +133,7 @@ namespace KK_SkinEffects
             if (dict == null)
                 _persistentCharaState[heroine] = dict = new Dictionary<string, object>();
 
-            controller.WriteCharaState(dict);
+            controller.WriteCharaState(dict, status:heroine.charFile.status);
         }
     }
 }

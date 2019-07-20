@@ -371,8 +371,12 @@ namespace KK_SkinEffects
                 UpdateAllTextures();
         }
 
-        public void WriteCharaState(IDictionary<string, object> dataDict, bool onlyCustomEffects = false)
+        public void WriteCharaState(IDictionary<string, object> dataDict, bool onlyCustomEffects = false, ChaFileStatus status = null)
         {
+            if (status == null)
+            {
+                status = ChaFileControl.status;
+            }
             dataDict[nameof(BukkakeLevel)] = BukkakeLevel;
             dataDict[nameof(SweatLevel)] = SweatLevel;
             dataDict[nameof(BloodLevel)] = BloodLevel;
@@ -381,9 +385,9 @@ namespace KK_SkinEffects
 
             if (!onlyCustomEffects)
             {
-                dataDict[nameof(ClothingState)] = (byte[])ChaFileControl.status.clothesState.Clone();
-                dataDict[nameof(AccessoryState)] = (bool[])ChaFileControl.status.showAccessory.Clone();
-                dataDict[nameof(SiruState)] = (byte[])ChaFileControl.status.siruLv.Clone();
+                dataDict[nameof(ClothingState)] = (byte[])status.clothesState.Clone();
+                dataDict[nameof(AccessoryState)] = (bool[])status.showAccessory.Clone();
+                dataDict[nameof(SiruState)] = (byte[])status.siruLv.Clone();
             }
         }
 
