@@ -18,13 +18,17 @@ namespace KK_SkinEffects
         {
             [HarmonyPostfix]
             [HarmonyPatch(typeof(TalkScene), "TalkEnd")]
-            public static void PreTalkSceneEndHook()
+            public static void PreTalkSceneIteratorEndHook(object __instance)
             {
-                // Save clothing state changes at end of TalkScene, specifically from ClothingStateMenu
-                var heroine = Utils.GetCurrentVisibleGirl();
-                var controller = GetEffectController(heroine);
-                if (controller != null)
-                    SkinEffectGameController.SavePersistData(heroine, controller);
+                int counter = (int) Traverse.Create(__instance).Field("$PC").GetValue();
+                if (counter == 2)
+                {
+                    // Just before fading out of talk scene.
+                    var heroine = Utils.GetCurrentVisibleGirl();
+                    var controller = GetEffectController(heroine);
+                    if (controller != null)
+                        SkinEffectGameController.SavePersistData(heroine, controller);
+                }
             }
 
             [HarmonyPostfix]
