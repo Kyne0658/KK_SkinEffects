@@ -1,11 +1,13 @@
 ﻿using System;
 using ActionGame.Chara;
 using Harmony;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ActionGame;
 using KKAPI.MainGame;
 using Manager;
+using ADV;
 
 namespace KK_SkinEffects
 {
@@ -29,6 +31,15 @@ namespace KK_SkinEffects
                     if (controller != null)
                         SkinEffectGameController.SavePersistData(heroine, controller);
                 }
+            }
+
+            [HarmonyPrefix, HarmonyPatch(typeof(TextScenario), nameof(ADV.Commands.EventCG.Release))]
+            public static void PreTextScenarioReleaseHook()
+            {
+                var heroine = Utils.GetCurrentVisibleGirl();
+                var controller = GetEffectController(heroine);
+                if (controller != null)
+                    SkinEffectGameController.SavePersistData(heroine, controller);
             }
 
             [HarmonyPostfix]
@@ -128,6 +139,7 @@ namespace KK_SkinEffects
 
                     // If leaving a special scene (e.g. lunch), maintain clothes from scene.
                     if (npc.IsExitingScene()) return;
+                    BepInEx.Logger.Log(BepInEx.Logging.LogLevel.Info, $"[SkinEffects] Resetting clothes: {npc?.chaCtrl?.fileParam?.fullname}: {string.Join(",", new List<int>(actionHistory).ConvertAll(i => i.ToString()).ToArray())}");
                     var effectsController = GetEffectController(npc.heroine);
                     if (effectsController == null) return;
 
@@ -151,6 +163,7 @@ namespace KK_SkinEffects
                     else
                     {
                         // Otherwise do a partial clear
+                        BepInEx.Logger.Log(BepInEx.Logging.LogLevel.Info, $"[SkinEffects] Partial clear.");
                         effectsController.ClothingState = null;
                         effectsController.AccessoryState = null;
                         effectsController.SiruState = null;
